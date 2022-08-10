@@ -1,2 +1,3 @@
 # ruleEngine
 参考thingsboard开发的简单规则引擎
+项目是基于akka、kafka构建的简易规则引擎，可通过js脚本创建规则过滤条件及执行动作，可通过调用restful接口进行规则管理。
