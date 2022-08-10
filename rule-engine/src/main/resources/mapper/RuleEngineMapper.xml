@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.ruleengine.mapper.RuleEngineMapper">
+
+    <resultMap id="RelationResultMap" type="com.example.ruleengine.model.Relation">
+        <id column="id" property="id"></id>
+        <result column="from_id" property="fromId"></result>
+        <result column="from_type" property="fromType"></result>
+        <result column="to_id" property="toId"></result>
+        <result column="to_type" property="toType"></result>
+        <result column="relation_type_group" property="relationTypeGroup"></result>
+        <result column="relation_type" property="relationType"></result>
+        <result column="additional_info" property="additionalInfo"></result>
+        <association property="ruleNode" column="to_id" select="getNodeById"></association>
+    </resultMap>
+
+    <resultMap id="RuleChainResultMap" type="com.example.ruleengine.model.RuleChain">
+        <id column="id" property="id"></id>
+        <result column="configuration" property="configuration"></result>
+        <result column="name" property="name"></result>
+        <result column="first_rule_node_id" property="firstRuleNodeId"></result>
+        <result column="root" property="root"></result>
+        <result column="debug_mode" property="debugMode"></result>
+        <result column="search_text" property="searchText"></result>
+        <result column="additional_info" property="additionalInfo"></result>
+        <result column="tenant_id" property="tenantId"></result>
+        <association property="ruleNode" column="first_rule_node_id" select="getNodeById"></association>
+    </resultMap>
+
+    <resultMap id="RuleNodeResultMap" type="com.example.ruleengine.model.RuleNode">
+        <id column="id" property="id"></id>
+        <result column="configuration" property="configuration"></result>
+        <result column="name" property="name"></result>
+        <result column="type" property="type"></result>
+        <result column="rule_chain_id" property="ruleChainId"></result>
+        <result column="debug_mode" property="debugMode"></result>
+        <result column="search_text" property="searchText"></result>
+        <result column="additional_info" property="additionalInfo"></result>
+    </resultMap>
+
+    <sql id="RelationTableName">
+        relation
+    </sql>
+
+    <sql id="RuleChainTableName">
+        rule_chain
+    </sql>
+
+    <sql id="RuleNodeTableName">
+        rule_node
+    </sql>
+
+    <sql id="RelationAllColumn">
+        id,from_id,to_id,relation_type_group,relation_type,from_type,to_type,additional_info
+    </sql>
+
+    <sql id="RuleChainAllColumn">
+        id,configuration,name,first_rule_node_id,root,debug_mode,search_text,additional_info,tenant_id
+    </sql>
+
+    <sql id="RuleNodeAllColumn">
+        id,rule_chain_id,configuration,name,type,additional_info,debug_mode,search_text
+    </sql>
+
+    <select id="getRelations" resultMap="RelationResultMap" >
+        SELECT <include refid="RelationAllColumn"></include> FROM
+        <include refid="RelationTableName"></include>
+        where from_id=#{fromId}
+    </select>
+
+    <select id="getRuleChains" resultMap="RuleChainResultMap" >
+        SELECT <include refid="RuleChainAllColumn"></include> FROM
+        <include refid="RuleChainTableName"></include>
+    </select>
+
+    <select id="getNodeById" resultMap="RuleNodeResultMap" >
+        SELECT <include refid="RuleNodeAllColumn"></include> FROM
+        <include refid="RuleNodeTableName"></include>
+        where id=#{id}
+    </select>
+
+    <select id="getRuleChainById" resultMap="RuleChainResultMap" >
+        SELECT <include refid="RuleChainAllColumn"></include> FROM
+        <include refid="RuleChainTableName"></include>
+        where id=#{id}
+    </select>
+
+
+    <insert id="insertRelation">
+        insert into <include refid="RelationTableName"></include>(
+        from_id,
+        from_type,
+        to_id,
+        to_type,
+        relation_type_group,
+        relation_type,
+        additional_info
+        )
+        values (
+        #{relation.fromId},
+        #{relation.fromType},
+        #{relation.toId},
+        #{relation.toType},
+        #{relation.relationTypeGroup},
+        #{relation.relationType},
+        #{relation.additionalInfo}
+        )
+    </insert>
+
+    <insert id="insertRuleChain">
+        insert into <include refid="RuleChainTableName"></include>(
+        configuration,
+        name,
+        first_rule_node_id,
+        root,
+        debug_mode,
+        search_text,
+        additional_info,
+        tenant_id
+        )
+        values (
+        #{ruleChain.configuration},
+        #{ruleChain.name},
+        #{ruleChain.firstRuleNodeId},
+        #{ruleChain.root},
+        #{ruleChain.debugMode},
+        #{ruleChain.searchText},
+        #{ruleChain.additionalInfo},
+        #{ruleChain.tenantId}
+
+        )
+    </insert>
+    <insert id="insertRuleNode">
+        insert into <include refid="RuleNodeTableName"></include>(
+        configuration,
+        name,
+        rule_chain_id,
+        type,
+        debug_mode,
+        search_text,
+        additional_info
+        )
+        values (
+        #{ruleNode.configuration},
+        #{ruleNode.name},
+        #{ruleNode.ruleChainId},
+        #{ruleNode.type},
+        #{ruleNode.debugMode},
+        #{ruleNode.searchText},
+        #{ruleNode.additionalInfo}
+        )
+    </insert>
+    <delete id="deleteRelation">
+        delete from <include refid="RelationTableName"></include> where id = #{id}
+    </delete>
+    <delete id="deleteRuleChain">
+        delete from <include refid="RuleChainTableName"></include> where id = #{id}
+    </delete>
+
+    <delete id="deleteRuleNode">
+        delete from <include refid="RuleNodeTableName"></include> where id = #{id}
+    </delete>
+
+
+</mapper>
